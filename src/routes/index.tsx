@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import globeAnimals from "@/assets/globe-animals.png";
+import forestScene from "@/assets/forest-scene.jpg";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -86,6 +88,12 @@ function Index() {
         />
       )}
       {step === "home" && language && <HomeScreen name={name} language={language} onReset={reset} />}
+      <style>{`
+        @keyframes ll-float-slow { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-14px) rotate(2deg); } }
+        @keyframes ll-drift { 0%,100% { transform: translate(0,0); } 50% { transform: translate(10px,-8px); } }
+        .ll-globe { animation: ll-float-slow 6s ease-in-out infinite; transform-origin: center; cursor: grab; }
+        .ll-globe:active { cursor: grabbing; }
+      `}</style>
     </main>
   );
 }
@@ -99,31 +107,67 @@ function Card({ children }: { children: React.ReactNode }) {
 }
 
 function LanguageStep({ onPick }: { onPick: (l: Language) => void }) {
+  const [drag, setDrag] = useState<{ x: number; y: number } | null>(null);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
   return (
-    <div className="flex min-h-[85vh] items-center justify-center">
-      <Card>
-        <div className="mb-8 text-center">
-          <div className="mb-3 text-6xl sm:text-7xl">🌍</div>
-          <h1 className="text-3xl font-bold text-foreground sm:text-4xl">Choose your language</h1>
-          <p className="mt-2 text-lg text-muted-foreground">Pick one to get started!</p>
+    <div
+      className="flex min-h-[85vh] items-center justify-center"
+      style={{
+        backgroundImage:
+          "radial-gradient(ellipse at top, oklch(0.92 0.08 220) 0%, oklch(0.96 0.04 200) 55%, oklch(0.98 0.03 100) 100%)",
+      }}
+    >
+      <div className="grid w-full max-w-5xl items-center gap-6 lg:grid-cols-[1.1fr_1fr]">
+        <div className="flex justify-center">
+          <img
+            src={globeAnimals}
+            alt="A smiling Earth globe surrounded by playful cartoon animals"
+            width={1024}
+            height={1024}
+            draggable={false}
+            onPointerDown={(e) => {
+              (e.target as HTMLElement).setPointerCapture(e.pointerId);
+              setDrag({ x: e.clientX - offset.x, y: e.clientY - offset.y });
+            }}
+            onPointerMove={(e) => {
+              if (!drag) return;
+              setOffset({ x: e.clientX - drag.x, y: e.clientY - drag.y });
+            }}
+            onPointerUp={() => setDrag(null)}
+            onPointerCancel={() => setDrag(null)}
+            onDoubleClick={() => setOffset({ x: 0, y: 0 })}
+            className="ll-globe h-auto w-[85%] max-w-[520px] select-none drop-shadow-2xl"
+            style={{
+              transform: `translate(${offset.x}px, ${offset.y}px)`,
+              animation: drag ? "none" : undefined,
+              touchAction: "none",
+            }}
+          />
         </div>
-        <div className="grid gap-4">
-          {LANGUAGES.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => onPick(lang)}
-              className="group flex items-center gap-4 rounded-2xl border-4 border-border bg-background p-5 text-left transition hover:border-primary hover:bg-primary/5 focus:border-primary focus:outline-none active:scale-[0.98] sm:gap-6 sm:p-6"
-            >
-              <span className="text-5xl sm:text-6xl" aria-hidden="true">{lang.flag}</span>
-              <span className="flex flex-1 flex-col">
-                <span className="text-2xl font-bold text-foreground sm:text-3xl">{lang.name}</span>
-                <span className="text-xl text-muted-foreground sm:text-2xl">{lang.native}</span>
-              </span>
-              <span className="text-3xl text-primary opacity-0 transition group-hover:opacity-100">→</span>
-            </button>
-          ))}
-        </div>
-      </Card>
+        <Card>
+          <div className="mb-6 text-center">
+            <h1 className="text-3xl font-bold text-foreground sm:text-4xl">Choose your language</h1>
+            <p className="mt-2 text-lg text-muted-foreground">Drag the globe & pick one!</p>
+          </div>
+          <div className="grid gap-4">
+            {LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => onPick(lang)}
+                className="group flex items-center gap-4 rounded-2xl border-4 border-border bg-background p-5 text-left transition hover:border-primary hover:bg-primary/5 focus:border-primary focus:outline-none active:scale-[0.98] sm:gap-6 sm:p-6"
+              >
+                <span className="text-5xl sm:text-6xl" aria-hidden="true">{lang.flag}</span>
+                <span className="flex flex-1 flex-col">
+                  <span className="text-2xl font-bold text-foreground sm:text-3xl">{lang.name}</span>
+                  <span className="text-xl text-muted-foreground sm:text-2xl">{lang.native}</span>
+                </span>
+                <span className="text-3xl text-primary opacity-0 transition group-hover:opacity-100">→</span>
+              </button>
+            ))}
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }
