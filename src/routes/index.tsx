@@ -238,57 +238,69 @@ function HomeScreen({
   const pct = Math.round((progress / total) * 100);
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
-      <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary text-3xl">
-            {language.flag}
+    <div
+      className="relative -mx-4 -my-6 min-h-screen px-4 py-6 sm:-mx-8 sm:-my-10 sm:px-8 sm:py-10"
+      style={{
+        backgroundImage: `linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0.75)), url(${forestScene})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <div className="mx-auto w-full max-w-3xl">
+        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-3xl bg-card/85 p-3 shadow-lg backdrop-blur">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary text-3xl">
+              {language.flag}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-muted-foreground">Hi there,</p>
+              <h1 className="truncate text-2xl font-bold text-foreground sm:text-3xl">{name}! 👋</h1>
+            </div>
           </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-muted-foreground">Hi there,</p>
-            <h1 className="truncate text-2xl font-bold text-foreground sm:text-3xl">{name}! 👋</h1>
-          </div>
-        </div>
-        <button
-          onClick={onReset}
-          className="shrink-0 rounded-full border-2 border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:border-primary"
-        >
-          Reset
-        </button>
-      </header>
+          <button
+            onClick={onReset}
+            className="shrink-0 rounded-full border-2 border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:border-primary"
+          >
+            Reset
+          </button>
+        </header>
 
-      <section className="mt-6 rounded-3xl bg-card p-6 shadow-lg sm:p-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-semibold text-muted-foreground">Your progress</p>
-            <p className="text-2xl font-bold text-foreground sm:text-3xl">
-              {progress} of {total} done!
-            </p>
+        <section className="mt-6 rounded-3xl bg-card/90 p-6 shadow-lg backdrop-blur sm:p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-muted-foreground">Your progress</p>
+              <p className="text-2xl font-bold text-foreground sm:text-3xl">
+                {progress} of {total} done!
+              </p>
+            </div>
+            <div className="text-4xl">⭐</div>
           </div>
-          <div className="text-4xl">⭐</div>
-        </div>
-        <div className="mt-4 h-5 w-full overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full bg-primary transition-all"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-      </section>
+          <div className="mt-4 h-5 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary transition-all"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+        </section>
 
-      <section className="mt-6">
-        <h2 className="mb-4 text-xl font-bold text-foreground sm:text-2xl">Let's learn!</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.key}
-              className={`${cat.bg} flex aspect-square flex-col items-center justify-center gap-2 rounded-3xl p-4 text-primary-foreground shadow-lg transition hover:brightness-105 active:scale-95`}
-            >
-              <span className="text-5xl sm:text-6xl" aria-hidden="true">{cat.emoji}</span>
-              <span className="text-lg font-bold sm:text-xl">{cat.label}</span>
-            </button>
-          ))}
-        </div>
-      </section>
+        <section className="mt-6">
+          <h2 className="mb-4 rounded-2xl bg-card/85 px-4 py-2 text-xl font-bold text-foreground shadow backdrop-blur sm:text-2xl">
+            Let's learn!
+          </h2>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.key}
+                className={`${cat.bg} flex aspect-square flex-col items-center justify-center gap-2 rounded-3xl p-4 text-primary-foreground shadow-lg ring-4 ring-white/60 transition hover:brightness-105 active:scale-95`}
+              >
+                <span className="text-5xl sm:text-6xl" aria-hidden="true">{cat.emoji}</span>
+                <span className="text-lg font-bold sm:text-xl">{cat.label}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
