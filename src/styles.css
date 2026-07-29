@@ -156,13 +156,22 @@
   50% { box-shadow: 0 0 0 10px rgba(216, 90, 48, 0); }
 }
 @keyframes ww-pulse-emoji { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+@keyframes ww-slide-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ww-tap-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+@keyframes ww-next-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 196, 57, 0.5); }
+  50% { transform: scale(1.03); box-shadow: 0 0 0 10px rgba(99, 196, 57, 0); }
+}
 
 .ww-spin-once { animation: ww-spin-once 1s ease-out 1 both; }
 .ww-slide-in { animation: ww-slide-in 400ms ease-out both; }
 .ww-fill { width: var(--ww-fill, 100%); animation: ww-fill 400ms ease-out both; }
 .ww-pulse-border { animation: ww-pulse-border 1.5s ease-in-out infinite; }
 .ww-pulse-emoji { display: inline-block; animation: ww-pulse-emoji 1.5s ease-in-out infinite; }
+.ww-slide-up { animation: ww-slide-up 200ms ease-out both; }
+.ww-tap-pulse { animation: ww-tap-pulse 600ms ease-in-out 2; }
+.ww-next-pulse { animation: ww-next-pulse 1.5s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ww-spin-once, .ww-slide-in, .ww-fill, .ww-pulse-border, .ww-pulse-emoji { animation: none !important; }
+  .ww-spin-once, .ww-slide-in, .ww-fill, .ww-pulse-border, .ww-pulse-emoji, .ww-slide-up, .ww-tap-pulse, .ww-next-pulse { animation: none !important; }
 }

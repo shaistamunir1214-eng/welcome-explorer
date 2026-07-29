@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { LearningScreen } from "@/components/LearningScreen";
 
 export type HomeLanguage = { code: string; flag: string; name: string; native: string };
 
@@ -35,6 +36,7 @@ export function HomeScreen({
 }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [activeTab, setActiveTab] = useState<string>("home");
+  const [lessonCategory, setLessonCategory] = useState<string | null>(null);
   const [challengeDone, setChallengeDone] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -79,6 +81,7 @@ export function HomeScreen({
     }
     setActiveTab("learn");
     setNotice(`Opening ${c.name}. Loading your first word.`);
+    setLessonCategory(c.id);
   };
 
   const onTabKeyDown = (e: React.KeyboardEvent, i: number) => {
@@ -88,6 +91,19 @@ export function HomeScreen({
     tabRefs.current[next]?.focus();
     setActiveTab(TABS[next].id);
   };
+
+  if (lessonCategory) {
+    return (
+      <LearningScreen
+        categoryId={lessonCategory}
+        onClose={() => {
+          setLessonCategory(null);
+          setActiveTab("home");
+        }}
+      />
+    );
+  }
+
 
   return (
     <div
