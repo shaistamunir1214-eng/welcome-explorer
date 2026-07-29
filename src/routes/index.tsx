@@ -414,6 +414,24 @@ function ConsentStep({
   onYes: () => void;
   onAsk: () => void;
 }) {
+  const [showError, setShowError] = useState(false);
+  const checkboxRef = useRef<HTMLInputElement>(null);
+  const errorId = "consent-error";
+
+  const handleCheck = (checked: boolean) => {
+    setConfirmed(checked);
+    if (checked) setShowError(false);
+  };
+
+  const handleYes = () => {
+    if (!confirmed) {
+      setShowError(true);
+      checkboxRef.current?.focus();
+      return;
+    }
+    onYes();
+  };
+
   return (
     <div className="text-center">
       <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-[#63C439] px-4 py-2 text-white shadow-md" style={{ fontSize: 18 }}>
@@ -462,18 +480,33 @@ function ConsentStep({
         </p>
       </div>
 
-      <label className="mt-6 flex cursor-pointer items-start justify-center gap-3 rounded-2xl bg-[#63C439]/10 p-4 text-left active:scale-[0.99] transition">
+      <label className={`mt-6 flex cursor-pointer items-start justify-center gap-3 rounded-2xl p-4 text-left active:scale-[0.99] transition ${showError ? "bg-[#E23E57]/10 ring-2 ring-[#E23E57]" : "bg-[#63C439]/10"}`}>
         <input
+          ref={checkboxRef}
           type="checkbox"
           checked={confirmed}
-          onChange={(e) => setConfirmed(e.target.checked)}
+          onChange={(e) => handleCheck(e.target.checked)}
           className="mt-1 h-6 w-6 shrink-0 cursor-pointer accent-[#63C439] rounded-md border-2 border-[#63C439]"
           aria-required="true"
+          aria-invalid={showError}
+          aria-describedby={showError ? errorId : undefined}
         />
         <span className="font-semibold text-[#1c6b12]" style={{ fontSize: 18 }}>
           I am a parent or guardian, and I agree to the Privacy Policy.
         </span>
       </label>
+
+      {showError && (
+        <div
+          id={errorId}
+          role="alert"
+          className="mx-auto mt-3 flex max-w-md items-center gap-2 rounded-2xl bg-[#E23E57] px-4 py-3 text-left font-bold text-white shadow-lg"
+          style={{ fontSize: 18 }}
+        >
+          <span aria-hidden="true">⚠️</span>
+          <span>Please check the box above to continue. A grown-up must agree to the Privacy Policy first.</span>
+        </div>
+      )}
 
       <p className="mt-4 font-bold text-[#1c6b12]" style={{ fontSize: 22 }}>
         Does your child have permission to use this app?
@@ -481,9 +514,8 @@ function ConsentStep({
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <button
-          onClick={onYes}
-          disabled={!confirmed}
-          className="ww-tap rounded-2xl bg-[#63C439] font-bold text-white shadow-xl focus:outline-none focus:ring-4 focus:ring-white/70 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
+          onClick={handleYes}
+          className="ww-tap rounded-2xl bg-[#63C439] font-bold text-white shadow-xl focus:outline-none focus:ring-4 focus:ring-white/70"
           style={{ minHeight: 80, fontSize: 22 }}
         >
           Accept & Continue 🎉
