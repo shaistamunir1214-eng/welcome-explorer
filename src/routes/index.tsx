@@ -175,6 +175,8 @@ function Onboarding() {
             childName={name}
             privacyOpen={privacyOpen}
             togglePrivacy={() => setPrivacyOpen((p) => !p)}
+            confirmed={confirmed}
+            setConfirmed={setConfirmed}
             onYes={consent}
             onAsk={() => showToast("Please ask a grown-up 👨‍👩‍👧")}
           />
