@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { HomeScreen } from "@/components/HomeScreen";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -845,42 +846,3 @@ function ConsentStep({
 }
 
 /* ---------- Home (post-onboarding) ---------- */
-function HomeScreen({ name, language, onReset }: { name: string; language: Language; onReset: () => void }) {
-  const headingRef = useRef<HTMLHeadingElement>(null);
-
-  // Onboarding is over: land the user on the new screen's heading.
-  useEffect(() => {
-    headingRef.current?.focus();
-  }, []);
-
-  return (
-    <main
-      className="flex min-h-dvh flex-col items-center justify-center px-6 py-10 text-center text-white"
-      style={{
-        fontFamily: "'Fredoka', system-ui, sans-serif",
-        backgroundImage: "linear-gradient(160deg, #63C439 0%, #378ADD 100%)",
-      }}
-    >
-      <Elephant size={140} />
-      <h1
-        ref={headingRef}
-        tabIndex={-1}
-        className="mt-4 font-bold outline-none"
-        style={{ fontSize: "clamp(28px, 6vw, 44px)" }}
-      >
-        {name}, you're going to be a WORD WIZARD! 🧙‍♀️
-      </h1>
-      <p className="mt-3 font-medium opacity-95" style={{ fontSize: 22 }}>
-        Learning <span aria-hidden="true">{language.flag}</span> {language.native} together
-      </p>
-      <button
-        onClick={onReset}
-        className="ww-tap mt-8 rounded-2xl bg-white px-6 font-bold text-[#1c6b12] shadow-xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#1c6b12]"
-        style={{ minHeight: 64, fontSize: 20 }}
-      >
-        Start Over
-      </button>
-    </main>
-
-  );
-}
