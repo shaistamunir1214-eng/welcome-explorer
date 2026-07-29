@@ -416,20 +416,44 @@ function ConsentStep({
       <p className="mt-4 font-medium text-slate-700" style={{ fontSize: 20 }}>
         {childName ? `${childName}, ` : ""}by using Word Wizard, you agree to our Privacy Policy.
       </p>
+
       <button
         type="button"
         onClick={togglePrivacy}
-        className="mt-3 text-[#378ADD] underline"
+        className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#378ADD]/10 px-4 py-2 font-bold text-[#378ADD] transition active:scale-95"
         style={{ fontSize: 18 }}
         aria-expanded={privacyOpen}
+        aria-controls="privacy-policy"
       >
-        {privacyOpen ? "Hide Privacy Policy" : "Read Privacy Policy"}
+        {privacyOpen ? "▲ Hide Privacy Policy" : "▼ Read Privacy Policy"}
       </button>
-      {privacyOpen && (
-        <div className="mx-auto mt-3 max-w-md rounded-2xl bg-slate-50 p-4 text-left text-slate-700" style={{ fontSize: 16 }}>
-          <p>We keep your child safe. We do not share their name or progress with anyone. No ads. No tracking. Grown-ups can delete data anytime.</p>
-        </div>
-      )}
+
+      <div
+        id="privacy-policy"
+        className={`mx-auto mt-3 max-w-md overflow-hidden rounded-3xl bg-slate-50 text-left text-slate-700 transition-all duration-300 ${privacyOpen ? "max-h-[600px] p-5 opacity-100" : "max-h-0 p-0 opacity-0"}`}
+      >
+        <h3 className="font-bold text-[#1c6b12]" style={{ fontSize: 18 }}>
+          🔒 Keeping kids safe is our job
+        </h3>
+        <ul className="mt-2 list-disc space-y-2 pl-5" style={{ fontSize: 16 }}>
+          <li>We only ask for a first name and the language you picked.</li>
+          <li>We do not ask for email, phone, address, or photos.</li>
+          <li>We do not show ads to kids.</li>
+          <li>We do not track where your child goes after using our app.</li>
+          <li>We do not sell or share any information with other companies.</li>
+        </ul>
+
+        <h3 className="mt-4 font-bold text-[#1c6b12]" style={{ fontSize: 18 }}>
+          🛡️ For grown-ups
+        </h3>
+        <p className="mt-1" style={{ fontSize: 16 }}>
+          Word Wizard is designed to be COPPA-friendly. Your child’s name and learning progress are stored only on this device. You can delete everything at any time by tapping “Start Over” on the home screen.
+        </p>
+
+        <p className="mt-3 font-semibold text-[#378ADD]" style={{ fontSize: 16 }}>
+          Questions? Email us at privacy@wordwizard.app
+        </p>
+      </div>
 
       <p className="mt-6 font-bold text-[#1c6b12]" style={{ fontSize: 22 }}>
         Does your child have permission to use this app?
