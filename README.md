@@ -1,26 +1,12 @@
-# Welcome Explorer
+# First Check Hub
 
-Create a child-friendly onboarding flow where:
-
-1. User selects a language (Urdu, Hindi, Bengali with flags)
-
-2. Enters child's name
-
-3. Navigates to home screen showing progress + category buttons
-
-   Colors: Green (#63C439), blue, coral accents
-
-   Typography: Large, simple, fun
-
-   No complex animations
-
-Responsive design for mobile (320px+) and tablet (768px+)
+This is mine old repo let do we work on it frist check
 
 This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/cc9b2e9a-a5e8-42e0-94af-f2f4f81853d6).
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/1e919e9d-e8a8-4ba8-98a5-ff756b7c4991).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
 - **Stay in sync**: every change made in Lovable is committed straight to this repository.

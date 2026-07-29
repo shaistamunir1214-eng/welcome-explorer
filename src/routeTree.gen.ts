@@ -9,8 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as KeyboardAccessibilityRouteImport } from './routes/keyboard-accessibility'
 import { Route as IndexRouteImport } from './routes/index'
 
+const KeyboardAccessibilityRoute = KeyboardAccessibilityRouteImport.update({
+  id: '/keyboard-accessibility',
+  path: '/keyboard-accessibility',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +25,39 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/keyboard-accessibility': typeof KeyboardAccessibilityRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/keyboard-accessibility': typeof KeyboardAccessibilityRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/keyboard-accessibility': typeof KeyboardAccessibilityRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/keyboard-accessibility'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/keyboard-accessibility'
+  id: '__root__' | '/' | '/keyboard-accessibility'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  KeyboardAccessibilityRoute: typeof KeyboardAccessibilityRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/keyboard-accessibility': {
+      id: '/keyboard-accessibility'
+      path: '/keyboard-accessibility'
+      fullPath: '/keyboard-accessibility'
+      preLoaderRoute: typeof KeyboardAccessibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  KeyboardAccessibilityRoute: KeyboardAccessibilityRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
