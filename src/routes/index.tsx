@@ -105,7 +105,10 @@ function Onboarding() {
     goNext();
   };
 
+  const [confirmed, setConfirmed] = useState(false);
+
   const consent = () => {
+    if (!confirmed) return;
     try { localStorage.setItem("ww_consent", "1"); } catch {}
     ding();
     setDone(true);
@@ -172,6 +175,8 @@ function Onboarding() {
             childName={name}
             privacyOpen={privacyOpen}
             togglePrivacy={() => setPrivacyOpen((p) => !p)}
+            confirmed={confirmed}
+            setConfirmed={setConfirmed}
             onYes={consent}
             onAsk={() => showToast("Please ask a grown-up 👨‍👩‍👧")}
           />
@@ -399,11 +404,13 @@ function NameStep({
 
 /* ---------- Step 4: Consent ---------- */
 function ConsentStep({
-  childName, privacyOpen, togglePrivacy, onYes, onAsk,
+  childName, privacyOpen, togglePrivacy, confirmed, setConfirmed, onYes, onAsk,
 }: {
   childName: string;
   privacyOpen: boolean;
   togglePrivacy: () => void;
+  confirmed: boolean;
+  setConfirmed: (v: boolean) => void;
   onYes: () => void;
   onAsk: () => void;
 }) {
@@ -455,17 +462,31 @@ function ConsentStep({
         </p>
       </div>
 
-      <p className="mt-6 font-bold text-[#1c6b12]" style={{ fontSize: 22 }}>
+      <label className="mt-6 flex cursor-pointer items-start justify-center gap-3 rounded-2xl bg-[#63C439]/10 p-4 text-left active:scale-[0.99] transition">
+        <input
+          type="checkbox"
+          checked={confirmed}
+          onChange={(e) => setConfirmed(e.target.checked)}
+          className="mt-1 h-6 w-6 shrink-0 cursor-pointer accent-[#63C439] rounded-md border-2 border-[#63C439]"
+          aria-required="true"
+        />
+        <span className="font-semibold text-[#1c6b12]" style={{ fontSize: 18 }}>
+          I am a parent or guardian, and I agree to the Privacy Policy.
+        </span>
+      </label>
+
+      <p className="mt-4 font-bold text-[#1c6b12]" style={{ fontSize: 22 }}>
         Does your child have permission to use this app?
       </p>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <button
           onClick={onYes}
-          className="ww-tap rounded-2xl bg-[#63C439] font-bold text-white shadow-xl focus:outline-none focus:ring-4 focus:ring-white/70"
+          disabled={!confirmed}
+          className="ww-tap rounded-2xl bg-[#63C439] font-bold text-white shadow-xl focus:outline-none focus:ring-4 focus:ring-white/70 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
           style={{ minHeight: 80, fontSize: 22 }}
         >
-          Yes, Let's Go! 🎉
+          Accept & Continue 🎉
         </button>
         <button
           onClick={onAsk}
