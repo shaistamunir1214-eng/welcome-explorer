@@ -105,7 +105,10 @@ function Onboarding() {
     goNext();
   };
 
+  const [confirmed, setConfirmed] = useState(false);
+
   const consent = () => {
+    if (!confirmed) return;
     try { localStorage.setItem("ww_consent", "1"); } catch {}
     ding();
     setDone(true);
