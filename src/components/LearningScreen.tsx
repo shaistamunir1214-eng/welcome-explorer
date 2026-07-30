@@ -4,12 +4,17 @@ import { WORD_CATEGORIES, lastWordKey, type WordCategory } from "@/lib/words";
 
 export function LearningScreen({
   categoryId,
+  wordIds,
   onClose,
 }: {
   categoryId: string;
+  /** Optional subset (e.g. review the words missed in a quiz). */
+  wordIds?: string[];
   onClose: () => void;
 }) {
-  const category: WordCategory = WORD_CATEGORIES[categoryId] ?? WORD_CATEGORIES.animals;
+  const base: WordCategory = WORD_CATEGORIES[categoryId] ?? WORD_CATEGORIES.animals;
+  const subset = wordIds?.length ? base.words.filter((w) => wordIds.includes(w.id)) : [];
+  const category: WordCategory = subset.length ? { ...base, words: subset } : base;
   const total = category.words.length;
 
   const [index, setIndex] = useState(0);
@@ -27,6 +32,7 @@ export function LearningScreen({
   // Restore last viewed word for this category
   useEffect(() => {
     try {
+      if (wordIds?.length) return; // review sessions always start at the first missed word
       const saved = Number(localStorage.getItem(lastWordKey(category.id)));
       if (Number.isFinite(saved) && saved > 0 && saved < total) setIndex(saved);
     } catch {}
@@ -35,8 +41,10 @@ export function LearningScreen({
 
   useEffect(() => {
     try {
+      if (wordIds?.length) return;
       localStorage.setItem(lastWordKey(category.id), String(index));
     } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category.id, index]);
 
   useEffect(() => {

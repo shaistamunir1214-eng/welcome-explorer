@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LearningScreen } from "@/components/LearningScreen";
+import { QuizScreen } from "@/components/QuizScreen";
+import { ParentControls } from "@/components/ParentControls";
+import type { QuizMode } from "@/lib/quiz-store";
 
 export type HomeLanguage = { code: string; flag: string; name: string; native: string };
 
@@ -37,6 +40,10 @@ export function HomeScreen({
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [activeTab, setActiveTab] = useState<string>("home");
   const [lessonCategory, setLessonCategory] = useState<string | null>(null);
+  const [lessonWordIds, setLessonWordIds] = useState<string[] | undefined>(undefined);
+  const [quizCategory, setQuizCategory] = useState<string | null>(null);
+  const [quizMode, setQuizMode] = useState<QuizMode>("practice");
+  const [parentOpen, setParentOpen] = useState(false);
   const [challengeDone, setChallengeDone] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -52,6 +59,33 @@ export function HomeScreen({
       setChallengeDone(localStorage.getItem("ww_challenge_day") === new Date().toDateString());
     } catch {}
   }, []);
+
+  // Restore the screen the child was last on, so a reload resumes the quiz.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("ww_active_screen");
+      if (!raw) return;
+      const s = JSON.parse(raw) as { screen: string; categoryId?: string; mode?: QuizMode };
+      if (s.screen === "quiz" && s.categoryId) {
+        setQuizMode(s.mode === "daily" ? "daily" : "practice");
+        setQuizCategory(s.categoryId);
+        setActiveTab("quiz");
+      } else if (s.screen === "parent") {
+        setParentOpen(true);
+        setActiveTab("parent");
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (quizCategory) {
+        localStorage.setItem("ww_active_screen", JSON.stringify({ screen: "quiz", categoryId: quizCategory, mode: quizMode }));
+      } else if (parentOpen) {
+        localStorage.setItem("ww_active_screen", JSON.stringify({ screen: "parent" }));
+      }
+    } catch {}
+  }, [quizCategory, quizMode, parentOpen]);
 
   const today = new Date();
   const animal = GREETING_ANIMALS[today.getDate() % GREETING_ANIMALS.length];
@@ -96,8 +130,52 @@ export function HomeScreen({
     return (
       <LearningScreen
         categoryId={lessonCategory}
+        wordIds={lessonWordIds}
         onClose={() => {
           setLessonCategory(null);
+          setLessonWordIds(undefined);
+          setActiveTab("home");
+        }}
+      />
+    );
+  }
+
+  if (quizCategory) {
+    return (
+      <QuizScreen
+        categoryId={quizCategory}
+        languageCode={language.code}
+        mode={quizMode}
+        onLearnMore={(id) => {
+          try { localStorage.removeItem("ww_active_screen"); } catch {}
+          setQuizCategory(null);
+          setLessonWordIds(undefined);
+          setLessonCategory(id);
+          setActiveTab("learn");
+        }}
+        onReviewMistakes={(id, wordIds) => {
+          try { localStorage.removeItem("ww_active_screen"); } catch {}
+          setQuizCategory(null);
+          setLessonWordIds(wordIds);
+          setLessonCategory(id);
+          setActiveTab("learn");
+        }}
+        onClose={() => {
+          try { localStorage.removeItem("ww_active_screen"); } catch {}
+          setQuizCategory(null);
+          setQuizMode("practice");
+          setActiveTab("home");
+        }}
+      />
+    );
+  }
+
+  if (parentOpen) {
+    return (
+      <ParentControls
+        onClose={() => {
+          try { localStorage.removeItem("ww_active_screen"); } catch {}
+          setParentOpen(false);
           setActiveTab("home");
         }}
       />
@@ -236,9 +314,23 @@ export function HomeScreen({
           style={{ minHeight: 100 }}
         >
           {challengeDone ? (
-            <p id="ww-challenge-heading" className="font-bold" style={{ fontSize: 20 }}>
-              <span aria-hidden="true">✅</span> Completed! Return tomorrow for a new challenge
-            </p>
+            <>
+              <p id="ww-challenge-heading" className="font-bold" style={{ fontSize: 20 }}>
+                <span aria-hidden="true">✅</span> Completed! Return tomorrow for a new challenge
+              </p>
+              <button
+                onClick={() => {
+                  setActiveTab("quiz");
+                  setNotice("Opening today's challenge results.");
+                  setQuizMode("daily");
+                  setQuizCategory("animals");
+                }}
+                className="mt-3 w-full shrink-0 rounded-2xl bg-[#63C439] px-6 font-bold text-white shadow-md transition active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white sm:mt-0 sm:w-auto"
+                style={{ height: 60, fontSize: 18 }}
+              >
+                See today's results
+              </button>
+            </>
           ) : (
             <>
               <div className="flex items-center gap-3">
@@ -255,7 +347,9 @@ export function HomeScreen({
               <button
                 onClick={() => {
                   setActiveTab("quiz");
-                  setNotice("Starting today's challenge quiz with 5 pre-selected words.");
+                  setNotice("Starting today's challenge quiz.");
+                  setQuizMode("daily");
+                  setQuizCategory("animals");
                   try { localStorage.setItem("ww_challenge_day", new Date().toDateString()); } catch {}
                   setChallengeDone(true);
                 }}
@@ -316,7 +410,12 @@ export function HomeScreen({
               <li key={t.id} className="flex-1">
                 <button
                   ref={(el) => { tabRefs.current[i] = el; }}
-                  onClick={() => { setActiveTab(t.id); setNotice(`${t.label} selected.`); }}
+                  onClick={() => {
+                    setActiveTab(t.id);
+                    setNotice(`${t.label} selected.`);
+                    if (t.id === "quiz") { setQuizMode("practice"); setQuizCategory("animals"); }
+                    if (t.id === "parent") setParentOpen(true);
+                  }}
                   onKeyDown={(e) => onTabKeyDown(e, i)}
                   aria-current={active ? "page" : undefined}
                   className={`relative flex h-full w-full flex-col items-center justify-center gap-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#63C439] ${
