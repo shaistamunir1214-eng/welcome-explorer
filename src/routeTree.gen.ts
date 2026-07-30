@@ -9,12 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ParentDashboardRouteImport } from './routes/parent-dashboard'
 import { Route as KeyboardAccessibilityRouteImport } from './routes/keyboard-accessibility'
+import { Route as DailyEmailPreviewRouteImport } from './routes/daily-email-preview'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ParentDashboardRoute = ParentDashboardRouteImport.update({
+  id: '/parent-dashboard',
+  path: '/parent-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KeyboardAccessibilityRoute = KeyboardAccessibilityRouteImport.update({
   id: '/keyboard-accessibility',
   path: '/keyboard-accessibility',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DailyEmailPreviewRoute = DailyEmailPreviewRouteImport.update({
+  id: '/daily-email-preview',
+  path: '/daily-email-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,37 +37,72 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/daily-email-preview': typeof DailyEmailPreviewRoute
   '/keyboard-accessibility': typeof KeyboardAccessibilityRoute
+  '/parent-dashboard': typeof ParentDashboardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/daily-email-preview': typeof DailyEmailPreviewRoute
   '/keyboard-accessibility': typeof KeyboardAccessibilityRoute
+  '/parent-dashboard': typeof ParentDashboardRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/daily-email-preview': typeof DailyEmailPreviewRoute
   '/keyboard-accessibility': typeof KeyboardAccessibilityRoute
+  '/parent-dashboard': typeof ParentDashboardRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/keyboard-accessibility'
+  fullPaths:
+    | '/'
+    | '/daily-email-preview'
+    | '/keyboard-accessibility'
+    | '/parent-dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/keyboard-accessibility'
-  id: '__root__' | '/' | '/keyboard-accessibility'
+  to:
+    | '/'
+    | '/daily-email-preview'
+    | '/keyboard-accessibility'
+    | '/parent-dashboard'
+  id:
+    | '__root__'
+    | '/'
+    | '/daily-email-preview'
+    | '/keyboard-accessibility'
+    | '/parent-dashboard'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DailyEmailPreviewRoute: typeof DailyEmailPreviewRoute
   KeyboardAccessibilityRoute: typeof KeyboardAccessibilityRoute
+  ParentDashboardRoute: typeof ParentDashboardRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/parent-dashboard': {
+      id: '/parent-dashboard'
+      path: '/parent-dashboard'
+      fullPath: '/parent-dashboard'
+      preLoaderRoute: typeof ParentDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/keyboard-accessibility': {
       id: '/keyboard-accessibility'
       path: '/keyboard-accessibility'
       fullPath: '/keyboard-accessibility'
       preLoaderRoute: typeof KeyboardAccessibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daily-email-preview': {
+      id: '/daily-email-preview'
+      path: '/daily-email-preview'
+      fullPath: '/daily-email-preview'
+      preLoaderRoute: typeof DailyEmailPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,7 +117,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DailyEmailPreviewRoute: DailyEmailPreviewRoute,
   KeyboardAccessibilityRoute: KeyboardAccessibilityRoute,
+  ParentDashboardRoute: ParentDashboardRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
